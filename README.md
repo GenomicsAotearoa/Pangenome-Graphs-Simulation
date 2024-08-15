@@ -1,57 +1,64 @@
-# Pangenome-Graphs-Simulation
+# Pangenome Graphs - Simulation
 
-# NGS data analysis used graph as reference on NeSI
-<p align="justify">
-In this workshop, we employes the VG toolkit for NGS data analysis based on pangenome graph reference 
-</p>
+This repository contains a section of the original [Pangenome Graphs Workshop](https://github.com/GenomicsAotearoa/Pangenome-Graphs-Workshop) that was removed to reduce the amount of content being covered.
 
-## vg mapping preliminaries
-Although vg contains a number of tools for working with pangenome graphs, it is best-known for read mapping. This is ultimately what many of its users are interested in vg for. In fact, vg contains three mature short read mapping tools:
+It involves the use of the `wgsim` software to simulate individual-level genomes (with genetic variants) from a single reference genome represented in `.fasta` format. These multiple genomes from individuals of the same species can then be used for testing/benchmarking pangenome graph construction and variant calling methods.
 
-- vg map: the original, highly accurate mapping algorithm
-- vg giraffe: the much faster and still accurate haplotype-based mapping algorithm
-- vg mpmap: the splice-aware RNA-seq mapping algorithm
+## Genomic data
 
-more details of vg can be found https://github.com/vgteam/vg
+The data for this exercise is the same as that used in the [Pangenome Graphs Workshop](https://github.com/GenomicsAotearoa/Pangenome-Graphs-Workshop), which can be download via:
 
-we use vg map in this workshop 
-
-### Learning objectives
-- Map NGS data to graph using vg map
-- Variant calling for NGS data against genome graph 
-
-## use wgsim to simulate 2X150 bp NGS data, error rate 0.005. We choose five genomes for simulation, 
-```bash
-mkdir graph_NGS
-cd graph_NGS
-mkdir simu_NGS_data
 ```
-The script for simulation NGS data
-```bash
-#!/usr/bin/bash
+git clone https://github.com/ZoeYang2020/dataset_for_pg_workshop
+```
 
-#SBATCH --account       ga03793
-#SBATCH --job-name      5NGS_simulate
-#SBATCH --cpus-per-task 8
-#SBATCH --mem           4G
-#SBATCH --time          1:00:00
+The data file `5NM.fa` contains the genome sequence for five different assesmblies of *Neisseria meningitidis*, which need to be split into individual genomes. 
 
-module purge
-module load SAMtools/1.16.1-GCC-11.3.0
+We can see the genome names via:
 
-input_folder=/home/zyang/pg_workshop/dataset_for_pg_workshop/12_genomes_for_NGS_simulation
-output_folder=/home/zyang/pg_workshop/graph_NGS/simu_NGS_data
+```
+grep '^>' 5NM.fa
+```
+
+The above command searches the file `5NM.fa` for lines that start ('^') with '>'.
+
+We can split the file into the five separate genomes (using the '>' symbol to identify where each one starts) usign the following commands:
+
+```
+awk '/^>/ { gsub(">","",$1)
+            FILE=$1 ".fa"
+            print ">" $1 >> FILE
+            next}
+          { print >> FILE }' 5NM.fa   
+```
+
+We now have five separate `.fasta` files, one per genome:
+
+```
+NC_003112.2.fa
+NC_017518.1.fa
+NZ_CP007668.1.fa
+NZ_CP016880.1.fa
+NZ_CP020423.2.fa
+```
+
+## Use `wgsim` to simulate individual genomes and variation
+
+Use `wgsim` to simulate 2x150bp NGS data, with an error rate of 0.005. 
+
+```
+outputfolder=simulated-genomes
+mkdir -p $output-folder
 
 for f in NC_017518_6k.fa ST154_6k.fa ST154Sim_6k.fa ST41Sim_6k.fa ST42Sim_6k.fa
-
 do
 
-x=$(basename $f .fa)
-echo ${x}
+    x=$(basename $f .fa)
+    echo ${x}
 
-wgsim $input_folder/${x}.fa -N 1000000 -1 150 -2 150  -e 0.005 -r 0 -R 0 -X 0 $output_folder/${x}.wgsim_er0.005.R1.fq  $output_folder/${x}.wgsim_er0.005.R2.fq
-gzip $output_folder/${x}.wgsim_er0.005.R1.fq
-gzip $output_folder/${x}.wgsim_er0.005.R2.fq
+    wgsim ${x}.fa -N 1000000 -1 150 -2 150  -e 0.005 -r 0 -R 0 -X 0 $output-folder/${x}.wgsim_er0.005.R1.fq  $output_folder/${x}.wgsim_er0.005.R2.fq
+    gzip $output_folder/${x}.wgsim_er0.005.R1.fq
+    gzip $output_folder/${x}.wgsim_er0.005.R2.fq
 
 done
 ```

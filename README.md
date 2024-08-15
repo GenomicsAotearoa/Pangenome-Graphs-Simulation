@@ -10,7 +10,7 @@ It involves the use of the `wgsim` software to simulate sequencing a genome usin
 The data for this exercise can be download by cloning this repository:
 
 ```
-git clone https://github.com/ZoeYang2020/dataset_for_pg_workshop
+git clone https://github.com/mikblack/Pangenome-Graphs-Simulation
 ```
 
 The data file `4Sim.fa` contains the genome sequence for four different genomes of *Neisseria meningitidis* (1 real, 3 with specific genomic feactures simulated), which need to be split into individual genomes. 
@@ -36,11 +36,10 @@ awk '/^>/ { gsub(">","",$1)
 We now have five separate `.fasta` files, one per genome:
 
 ```
-NC_003112.2.fa
-NC_017518.1.fa
-NZ_CP007668.1.fa
-NZ_CP016880.1.fa
-NZ_CP020423.2.fa
+NC_017518.fa
+ST154Sim.fa
+ST41Sim.fa
+ST42Sim.fa
 ```
 
 ## Use `wgsim` to simulate individual genomes and variation
@@ -73,4 +72,4 @@ done
  - `-R`: fractio of the genome comprising InDels (0)
  - `-X`: probability an indel is extended (0)
 
-The simulated data from each individual can now be aligned to either a linear reference or a pangenome graph using the methods detailed in 
+The simulated data from each individual can now be aligned to either a linear reference or a pangenome graph.

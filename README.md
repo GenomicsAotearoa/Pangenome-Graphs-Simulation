@@ -4,6 +4,7 @@ This repository contains a section of the original [Pangenome Graphs Workshop](h
 
 It involves the use of the `wgsim` software to simulate sequencing a genome using short-read high throughput sequnecing technology. The short-read data can be used to investigate the difference in alignment percentages when aligning to a pangenome assembly, versus aligning to a single linear reference genome.
 
+This could be run as a short interactive session, but there is still a bit of tidying up that would need to be done.
 
 ## Genomic data
 

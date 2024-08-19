@@ -137,9 +137,6 @@ done
 ```
 mkdir vgmap_12e_sim4_allR10S3_typing
 
-# Generate snarls of graph
-vg snarls 4Sim_1K96_256.xg > 4Sim_1K96_256.xg.snarls
-
 # Genotyping
 data_gam=graph_based_mapping/*.wgsim_er0.005.vgmap_4Sim.gam
 input=graph_based_mapping
@@ -147,7 +144,7 @@ output=vgmap_12e_sim4_allR10S3_typing
 graph_xg=4Sim_1K96_256.xg
 snarls_file=4Sim_1K96_256.xg.snarls
 
-#compute snarls
+# Generate snarls of graph
 vg snarls $graph_xg >$snarls_file
 
 for f in $data_gam
